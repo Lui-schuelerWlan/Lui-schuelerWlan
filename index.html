@@ -49,7 +49,7 @@
 
     <div class="login-box">
         <h2>Neues WLAN-Portal</h2>
-        <p>Bitte mit den normalen Schuldaten anmelden.</p>
+        <p>Bitte mit den normalen Iserv-Daten anmelden.</p>
         
         <!-- Rein visuelle Felder, kein <form> -->
         <input type="text" id="user" placeholder="Benutzername">
@@ -65,11 +65,20 @@
             document.getElementById('pass').value = '';
 
             // 2. Den aktuellen URL-Parameter auslesen (z.B. "?jg=8")
-            const urlParameter = window.location.search;
+            const urlParams = new URLSearchParams(window.location.search);
+            const jahrgang = urlParams.get('jg') || 'unbekannt'; 
 
-            // 3. Auf die zweite Seite weiterleiten und den Parameter dranhängen
-            // So wird z.B. aus aufklaerung.html -> aufklaerung.html?jg=8
-            window.location.href = 'aufklaerung.html' + urlParameter;
+            // an Goatcounter: Speichere diesen Klick unter einem eigenen Namen ab!
+            window.goatcounter = {
+                // Das ist der Name, der gleich in Ihrem Dashboard auftaucht:
+                path: '/phishing/jahrgang-' + jahrgang, 
+        
+                // Das ist der Titel für die Statistik:
+                title: 'Klick aus Jahrgang ' + jahrgang 
+            };
+
+            // 3. Auf die zweite Seite weiterleiten
+            window.location.href = 'aufklaerung.html';
         }
 
         // Extra-Aufgabe: Enter-Taste im Passwort-Feld abfangen
