@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schul-WLAN Portal - Anmeldung</title>
+    <style>
+        /* Ein bisschen CSS, damit es seriöser aussieht */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>Neues WLAN-Portal</h2>
+        <p>Bitte mit den normalen Schuldaten anmelden.</p>
+        
+        <!-- Rein visuelle Felder, kein <form> -->
+        <input type="text" id="user" placeholder="Benutzername">
+        <input type="password" id="pass" placeholder="Passwort">
+        
+        <button onclick="loginSimulation()">Anmelden</button>
+    </div>
+
+    <script>
+        function loginSimulation() {
+            // 1. Felder sofort ausleeren (damit das Passwort weg ist)
+            document.getElementById('user').value = '';
+            document.getElementById('pass').value = '';
+
+            // 2. Den aktuellen URL-Parameter auslesen (z.B. "?jg=8")
+            const urlParameter = window.location.search;
+
+            // 3. Auf die zweite Seite weiterleiten und den Parameter dranhängen
+            // So wird z.B. aus aufklaerung.html -> aufklaerung.html?jg=8
+            window.location.href = 'aufklaerung.html' + urlParameter;
+        }
+
+        // Extra-Aufgabe: Enter-Taste im Passwort-Feld abfangen
+        document.getElementById('pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                loginSimulation();
+            }
+        });
+    </script>
+</body>
+</html>
