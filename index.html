@@ -5,89 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schul-WLAN Portal - Anmeldung</title>
     <style>
-        /* Ein bisschen CSS, damit es seriöser aussieht */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .login-box {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-            width: 300px;
-            text-align: center;
-        }
-        input {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #004494;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #0056b3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #004494; }
     </style>
 </head>
 <body>
 
     <div class="login-box">
         <h2>Neues WLAN-Portal</h2>
-        <p>Bitte mit den normalen Iserf-Daten anmelden.</p>
+        <p>Bitte mit den normalen IServ-Daten anmelden.</p>
         
-        <!-- Rein visuelle Felder, kein <form> -->
         <input type="text" id="user" placeholder="Benutzername">
         <input type="password" id="pass" placeholder="Passwort">
         
-        <button onclick="loginSimulation()">Anmelden</button>
+        <button id="loginBtn" onclick="loginSimulation()">Anmelden</button>
     </div>
 
     <script>
-        function loginSimulation() {
-            // 1. Felder sofort ausleeren (damit das Passwort weg ist)
+        // "async" hinzugefügt, damit wir auf das Speichern warten können
+        async function loginSimulation() {
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true; // Button deaktivieren, damit man nicht doppelt klickt
+            btn.innerText = "Lade...";
+
+            // 1. Felder sofort leeren (Sicherheit)
             document.getElementById('user').value = '';
             document.getElementById('pass').value = '';
 
-            // 2. Den aktuellen URL-Parameter auslesen (z.B. "?jg=8")
+            // 2. Parameter auslesen
             const urlParams = new URLSearchParams(window.location.search);
             const jahrgang = urlParams.get('jg') || 'unbekannt'; 
 
-            // an Goatcounter: Speichere diesen Klick unter einem eigenen Namen ab!
-            window.goatcounter = {
-                // Das ist der Name, der gleich in Ihrem Dashboard auftaucht:
-                path: '/phishing/jahrgang-' + jahrgang, 
-        
-                // Das ist der Titel für die Statistik:
-                title: 'Klick aus Jahrgang ' + jahrgang 
-            };
+            // 3. Daten im Hintergrund an Supabase senden (Adblocker-sicher)
+            const supabaseUrl = 'https://DEIN_PROJEKT.supabase.co/rest/v1/klicks';
+            const supabaseKey = 'DEIN_SUPABASE_ANON_KEY'; // Den findest du in den Supabase API-Settings
 
-            // 3. Auf die zweite Seite weiterleiten
+            try {
+                // Das 'await' ist wichtig! Es wartet, bis der Request fertig ist,
+                // BEVOR die Seite weiterleitet. Sonst bricht der Browser den Request ab.
+                await fetch(supabaseUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': supabaseKey,
+                        'Authorization': 'Bearer ' + supabaseKey
+                    },
+                    // Sendet den Jahrgang in die Spalte "jahrgang"
+                    body: JSON.stringify({ jahrgang: jahrgang })
+                });
+            } catch (error) {
+                console.error("Tracking fehlgeschlagen, leiten trotzdem weiter...");
+            }
+
+            // 4. Auf die zweite Seite weiterleiten
             window.location.href = 'aufklaerung.html';
         }
 
-        // Extra-Aufgabe: Enter-Taste im Passwort-Feld abfangen
+        // Enter-Taste im Passwort-Feld abfangen
         document.getElementById('pass').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 loginSimulation();
             }
         });
     </script>
-    <script data-goatcounter="https://luimedienscouts.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
