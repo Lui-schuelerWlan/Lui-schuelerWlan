@@ -3,7 +3,7 @@ name: Supabase Keep Alive
 on:
   schedule:
     # Führt den Ping alle 3 Tage um Mitternacht aus
-    - cron: '0 0 */3 * *'
+    - cron: '0 0 * * *'
   workflow_dispatch: # Ermöglicht manuelles Ausführen zum Testen
 
 jobs:
