@@ -15,3 +15,6 @@ jobs:
           curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/klicks?limit=1" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+      - name: Keepalive Workflow
+        uses: gautamkrishnar/keepalive-workflow@v2
+
