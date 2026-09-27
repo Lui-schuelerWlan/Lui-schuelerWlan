@@ -2,19 +2,30 @@ name: Supabase Keep Alive
 
 on:
   schedule:
-    # Führt den Ping alle 3 Tage um Mitternacht aus
+    # Führt den Ping jeden Tag um Mitternacht aus
     - cron: '0 0 * * *'
   workflow_dispatch: # Ermöglicht manuelles Ausführen zum Testen
+
+# WICHTIG: Diese Zeilen beheben den "Repository access blocked" Fehler.
+# Sie geben der Action die Erlaubnis, den Workflow am Leben zu erhalten.
+permissions:
+  actions: write
+  contents: write
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      # WICHTIG: Die keepalive-Action braucht diesen Checkout-Schritt zwingend, 
+      # da sie im Hintergrund auf dein Repository zugreifen muss.
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
       - name: Ping Supabase API
         run: |
           curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/klicks?limit=1" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+          
       - name: Keepalive Workflow
         uses: gautamkrishnar/keepalive-workflow@v2
-
